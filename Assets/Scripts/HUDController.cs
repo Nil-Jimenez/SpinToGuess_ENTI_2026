@@ -1,0 +1,26 @@
+using TMPro;
+using UnityEngine;
+
+public class HUDController : MonoBehaviour
+{
+    public static HUDController instance;
+    [SerializeField] TMP_Text interactionText;
+
+    private void Awake()
+    {
+        instance = this;
+    }
+ 
+
+    public void EnableInteractionText(string text)
+    {
+        interactionText.text = text + " (F)";
+        interactionText.gameObject.SetActive(true);
+    }
+
+    public void DisableInteractionText()
+    {
+        interactionText.gameObject.SetActive(true);
+
+    }
+}
