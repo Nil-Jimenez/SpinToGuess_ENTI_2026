@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
     private InputSystem_Actions input;
-    private Interactable currentInteractable;
+    Interactable currentInteractable;
     private float playerReach = 3f;
 
     void Start()
@@ -19,10 +19,7 @@ public class PlayerInteraction : MonoBehaviour
         CheckInteraction();
         if(input.Player.Interact.WasPressedThisFrame() && currentInteractable != null)
         {
-
             currentInteractable.Interact();
-
-
         }
     }
 
@@ -46,6 +43,10 @@ public class PlayerInteraction : MonoBehaviour
                     DisableCurrentInteractable();
                 }
             }
+            else
+            {
+                DisableCurrentInteractable();
+            }
         }
         else
         {
@@ -66,11 +67,12 @@ public class PlayerInteraction : MonoBehaviour
     {
         HUDController.instance.DisableInteractionText();
 
-        if (currentInteractable)
+        if(currentInteractable != null)
         {
             currentInteractable.DisableOutline();
             currentInteractable = null;
         }
+        
 
     }
 

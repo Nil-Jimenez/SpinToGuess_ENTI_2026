@@ -5,8 +5,8 @@ using UnityEngine.Events;
 public class Interactable : MonoBehaviour
 {
 
-    [SerializeField] private Outline outline;
-    [HideInInspector] public string message;
+    Outline outline;
+    public string message;
 
 
     [SerializeField] private UnityEvent onInteraction;
@@ -31,11 +31,13 @@ public class Interactable : MonoBehaviour
 
     public void DisableOutline()
     {
+        if(outline != null)
         outline.enabled = false;
     }
 
     public void EnableOutLine()
     {
+        if (outline != null)
         outline.enabled = true;
     }
 }

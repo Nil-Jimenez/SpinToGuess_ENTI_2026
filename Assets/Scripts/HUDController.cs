@@ -4,7 +4,7 @@ using UnityEngine;
 public class HUDController : MonoBehaviour
 {
     public static HUDController instance;
-    [SerializeField] TMP_Text interactionText;
+    [SerializeField] private TMP_Text interactionText;
 
     private void Awake()
     {
@@ -20,7 +20,7 @@ public class HUDController : MonoBehaviour
 
     public void DisableInteractionText()
     {
-        interactionText.gameObject.SetActive(true);
+        interactionText.gameObject.SetActive(false);
 
     }
 }

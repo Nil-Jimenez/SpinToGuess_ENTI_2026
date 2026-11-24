@@ -12,9 +12,9 @@ public class CameraMovement : MonoBehaviour
 
     private InputSystem_Actions input;
 
+  
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
         canMove = true;
 
         input = new();
