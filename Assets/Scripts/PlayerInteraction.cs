@@ -1,23 +1,27 @@
 using UnityEngine;
-
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
-    private InputSystem_Actions input;
-    Interactable currentInteractable;
-    private float playerReach = 3f;
+    [SerializeField] private float playerReach = 10f;      
+    [SerializeField] private LayerMask interactionMask = ~0; 
+
+    private Interactable currentInteractable;
+    private Camera cam;
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        input = new();
-        input.Enable();
+        cam = Camera.main;
     }
 
     void Update()
     {
+        if (Mouse.current == null) return;
+
         CheckInteraction();
-        if(input.Player.Interact.WasPressedThisFrame() && currentInteractable != null)
+
+        if (Mouse.current.leftButton.wasPressedThisFrame && currentInteractable != null)
         {
             currentInteractable.Interact();
         }
@@ -25,39 +29,36 @@ public class PlayerInteraction : MonoBehaviour
 
     void CheckInteraction()
     {
-
-        RaycastHit hit;
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);   
-        if(Physics.Raycast(ray, out hit, playerReach))
-        {
-            if (hit.collider.tag == "Interactable")
-            {
-                Interactable newInteractable = hit.collider.GetComponent<Interactable>();
-
-                if (newInteractable.enabled)
-                {
-                    SetNewCurrentInteractable(newInteractable);
-                }
-                else
-                {
-                    DisableCurrentInteractable();
-                }
-            }
-            else
-            {
-                DisableCurrentInteractable();
-            }
-        }
-        else
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
         {
             DisableCurrentInteractable();
+            return;
         }
 
+        Ray ray = cam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
+        if (Physics.Raycast(ray, out RaycastHit hit, playerReach, interactionMask)
+            && hit.collider.CompareTag("Interactable"))
+        {
+            Interactable newInteractable = hit.collider.GetComponent<Interactable>();
+
+            if (newInteractable != null && newInteractable.enabled)
+            {
+                SetNewCurrentInteractable(newInteractable);
+                return;
+            }
+        }
+
+        DisableCurrentInteractable();
     }
 
     void SetNewCurrentInteractable(Interactable newInteractable)
     {
+        if (currentInteractable != null && currentInteractable != newInteractable)
+        {
+            currentInteractable.DisableOutline();
+        }
+
         currentInteractable = newInteractable;
         currentInteractable.EnableOutLine();
         HUDController.instance.EnableInteractionText(currentInteractable.message);
@@ -67,17 +68,10 @@ public class PlayerInteraction : MonoBehaviour
     {
         HUDController.instance.DisableInteractionText();
 
-        if(currentInteractable != null)
+        if (currentInteractable != null)
         {
             currentInteractable.DisableOutline();
             currentInteractable = null;
         }
-        
-
-    }
-
-    private void OnDestroy()
-    {
-        if (input != null) input.Disable();
     }
 }
